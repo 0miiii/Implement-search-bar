@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { searchService } from "../../services";
 import { Input, RecommendedSearch } from "../../components";
+import { useFocus } from "../../hooks";
 import { sick } from "../../types";
 
 export const HomePage = () => {
   const [searchResult, setSearchResult] = useState<sick[]>([]);
-  const [isFocus, setFocus] = useState(false);
+
+  const {
+    isFocus,
+    focusHandler: turnOnRecommendedSearch,
+    blurHandler: turnOffRecommendedSearch,
+  } = useFocus();
 
   const fetchData = async (query: string) => {
     console.info("calling api");
@@ -23,21 +29,12 @@ export const HomePage = () => {
     fetchData(event.target.value);
   };
 
-  const focusHandler = () => {
-    setFocus(true);
-  };
-
-  const blurHandler = () => {
-    setFocus(false);
-  };
-
   return (
     <div>
-      HomePage
       <Input
         onChange={fetchDataByInputChange}
-        onFocus={focusHandler}
-        onBlur={blurHandler}
+        onFocus={turnOnRecommendedSearch}
+        onBlur={turnOffRecommendedSearch}
       />
       {isFocus && <RecommendedSearch sickInfo={searchResult} />}
     </div>
