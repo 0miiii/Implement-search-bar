@@ -1,12 +1,20 @@
-import axios from "axios";
+import { createHttpClient } from "../utils";
 
-export const searchAPI = async (query: string) => {
+type sick = { sickCd: string; sickNm: string };
+
+interface SearchService {
+  (query: string): Promise<sick[]>;
+}
+
+const baseURL = "http://localhost:4000";
+const searchClient = createHttpClient(baseURL);
+
+export const searchService: SearchService = async (query) => {
   try {
-    const { data } = await axios.get(
-      `http://localhost:4000/sick/sick?q=${query}`,
-    );
+    const { data } = await searchClient.get(`/sick?q=${query}`);
     return data;
-  } catch (err) {
-    throw new Error("Error");
+  } catch (error) {
+    console.error("데이터 요청 실패:", error);
+    throw new Error("데이터 요청 실패");
   }
 };
