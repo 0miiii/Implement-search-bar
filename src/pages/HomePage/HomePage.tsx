@@ -14,7 +14,6 @@ export const HomePage = () => {
   } = useFocus();
 
   const fetchData = async (query: string) => {
-    console.info("calling api");
     try {
       const response = await searchService(query);
       setSearchResult(response);
