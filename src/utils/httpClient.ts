@@ -13,6 +13,11 @@ export const createHttpClient: HttpClient = (baseURL) => {
     },
   });
 
+  httpClient.interceptors.request.use((config) => {
+    console.log("calling api");
+    return config;
+  });
+
   httpClient.interceptors.response.use(
     (response) => response,
     (error: AxiosError) => {
