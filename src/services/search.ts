@@ -1,6 +1,5 @@
 import { createHttpClient } from "../utils";
-
-type sick = { sickCd: string; sickNm: string };
+import { sick } from "../types";
 
 interface SearchService {
   (query: string): Promise<sick[]>;
