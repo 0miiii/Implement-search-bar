@@ -1,11 +1,15 @@
-import axios, { AxiosInstance, AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
+import { Storage } from "./webStorage";
 
 interface HttpClient {
-  (baseURL: string): AxiosInstance;
+  get: <T>(url: string) => Promise<T>;
+  post: <T, D>(url: string, data: D) => Promise<T>;
+  put: <T, D>(url: string, data: D) => Promise<T>;
+  remove: <T>(url: string) => Promise<T>;
 }
 
-export const createHttpClient: HttpClient = (baseURL) => {
-  const httpClient = axios.create({
+function createHttpClient(baseURL: string, tokenStorage?: Storage): HttpClient {
+  const instance = axios.create({
     baseURL: baseURL,
     timeout: 5000,
     headers: {
@@ -13,12 +17,22 @@ export const createHttpClient: HttpClient = (baseURL) => {
     },
   });
 
-  httpClient.interceptors.request.use((config) => {
-    console.log("calling api");
-    return config;
-  });
+  instance.interceptors.request.use(
+    (config) => {
+      const token = tokenStorage?.get();
 
-  httpClient.interceptors.response.use(
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    },
+  );
+
+  instance.interceptors.response.use(
     (response) => response,
     (error: AxiosError) => {
       if (error.response) {
@@ -33,5 +47,27 @@ export const createHttpClient: HttpClient = (baseURL) => {
     },
   );
 
-  return httpClient;
-};
+  async function get<T>(url: string): Promise<T> {
+    const response = await instance.get(url);
+    return response.data;
+  }
+
+  async function post<T, D>(url: string, data: D): Promise<T> {
+    const response = await instance.post(url, data);
+    return response.data;
+  }
+
+  async function put<T, D>(url: string, data: D): Promise<T> {
+    const response = await instance.put(url, data);
+    return response.data;
+  }
+
+  async function remove<T>(url: string): Promise<T> {
+    const response = await instance.delete(url);
+    return response.data;
+  }
+
+  return { get, post, put, remove };
+}
+
+export default createHttpClient;

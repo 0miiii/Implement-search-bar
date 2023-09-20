@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useFocus = () => {
+const useFocus = () => {
   const [isFocus, setFocus] = useState(false);
 
   const focusHandler = () => {
@@ -13,3 +13,5 @@ export const useFocus = () => {
 
   return { isFocus, focusHandler, blurHandler };
 };
+
+export default useFocus;
