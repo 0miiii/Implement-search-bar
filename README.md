@@ -1,7 +1,7 @@
 # 실행 방법
 
 ```
-git clone https://github.com/0miiii/search-implementation.git
+git clone https://github.com/0miiii/Implement-search-bar.git
 
 npm install
 
